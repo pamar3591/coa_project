@@ -156,7 +156,7 @@ class judge(object):
 			self.raceCode = self.raceCodes[race]
 		else:
 			self.raceCode = self.raceCodes['Other']
-		#self.birthCodes = {'1':'0','2':'0','3':'0','4':'0','5':'0','6':'0','7':'1','8':'1','9':'1','10':'1','11':'1','12':'1'}
+
 		self.birthCodes = {'0':'0','1':'1'}
 		self.birthCode = self.birthCodes[birth]
 		self.fullName = fullName

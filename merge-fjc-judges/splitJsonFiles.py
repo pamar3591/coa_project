@@ -1,4 +1,4 @@
-# splits the data in /us_text_20200604/data/data.jsonl into year-wise JSON files
+# splits the data in /us_text_20200604/data/data.jsonl into year-wise JSON files. The original data is available on file with Nina Varsava. Please contact for any question or issues
 # separate json file for each year in directory /us_text_20200604/data/Data/yearData
 import os
 import json
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
 	working_dir = os.path.join(sys.argv[1],'raw-caselaw')
 	outDir = os.path.join(sys.argv[1])
-	dataJsonName = os.path.join(working_dir, "f-appx_text_20200604/data", 'data.jsonl')
+	dataJsonName = os.path.join(working_dir, "f-appx_text_20200604/data", 'data.jsonl')   # Here we are importing the data.
 	outFolder = os.path.join(outDir, 'output_dir', 'Data', 'yearData')
 
 	outFileNameBase = 'fedReporter.json'

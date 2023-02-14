@@ -18,10 +18,6 @@ def check_per_curiam(author):
     return(False)
 
 def many_judges_check(author,all_judges):
-    # do >1 judges have the same last name?
-    # sometimes judge names are repeated but they are not really different judges
-    # for example: ';RANDOLPH, Senior Circuit Judge:;SRINIVASAN, Circuit Judge,;SRINIVASAN, Circuit Judge,'
-    # for cases like this, we require two tests. 1 tests it using author names, and second, also the sitting judges
     test_authors = check_multiple(author)
     test_judges = check_multiple(all_judges)
     if test_judges and test_authors:
@@ -40,11 +36,7 @@ def check_multiple(list):
                     return(True)
     return(False)
 
-# function checks
-# many_judges_check(['smith', 'nicholas', 'adam smith'])
-# many_judges_check(['smith', 'nicholas', 'smith'])
-# many_judges_check(['smith', 'nicholas', 'adam m smith'])
-# many_judges_check(['jon smith', 'nicholas jon', 'adam'])
+
 
 def clean_author_list(author):
     original_str = author
@@ -111,7 +103,7 @@ def get_consec_caps(text):
 def check_author_in_opinion_text(text, all_judges):
     caps_list = get_consec_caps(text)
     index = 'not_found'
-    if len(caps_list) > 1: # check only if the first name in the list matches something in the judge list (is this ok?)
+    if len(caps_list) > 1:
         # attempt finding name in author list
         index = find_index([caps_list[0].lower()], all_judges,'')
     return(index)
@@ -142,21 +134,12 @@ def isNaN(string):
     # check if string is nan
     return string != string
 # checking if function is ok
-# print(isNaN("hello"))
-# print(isNaN(np.nan))
 
 def fix_judge_name_typos(author):
 
-    # To correct more typo, add the following pattern to the mapper:
-    # re.compile(r"(^.*)WRONG_NAME(.*$)", flags=re.IGNORECASE): r"\1CORRECT_NAME\2"
-    # Replace WRONG_NAME with the original name and the CORRECT_NAME with the corrected name
-    # Note that raw strings are used in this mapper (meaning that it cannot take formatted strings)
-    # Do not use formatted string, i.e., use "KRAVITCH" instead of "karvitch".upper() in the replace parameter
 
     # all judge names can be cleaned like this (including both the opinion author and panel judges)
 
-    # should be: (change all to this format)
-    # from typo mapper <ipynb>
     author = re.sub(r'^kravttch$',"kravitch",author)
     author = re.sub(r"^kravttch$", "kravitch",author)
     author = re.sub(r"^higgingson$", "higginson",author)
@@ -179,12 +162,11 @@ def fix_judge_name_typos(author):
     author = re.sub(r"^raqgi$", "raggi",author)
 
     author = re.sub(r"^hard iman$", "hardiman",author)
-    author = re.sub(r"^puentes$", "fuentes",author) # pull up cite and share
-    # author = re.sub(r"^jones ii$", "jones",author) # pull up cite and share
-    author = re.sub(r"^stephens f williams$","williams stephen",author) # pull up cite and share
+    author = re.sub(r"^puentes$", "fuentes",author)
+    author = re.sub(r"^stephens f williams$","williams stephen",author)
 
-    # which one to keep? Check
-    author = re.sub(r'^barrett barrett$', "barkett", author)  # this is ok
+    
+    author = re.sub(r'^barrett barrett$', "barkett", author)
     # needs to be fixed for specific rows: fix barrett to barkett only if
     # if author is barrett and there is a barrett on the panel --> do nothing
     # else author is barrett and there is a barkett on the panel --> change to barkett (handled in function with wilkins)
@@ -272,7 +254,6 @@ def fix_judge_name_typos(author):
 
 def clean_all_judges(all_judges):
     all_judges = [unidecode.unidecode(x) for x in all_judges]  # avoiding errors in names like josé
-    # all_judges = [re.sub('[^A-Za-z0-9]+', ' ', x) for x in all_judges]  # remove all special characters from list which are not alphabets
     all_judges = [re.sub('[^A-Za-z0-9\']+', ' ', x) for x in all_judges]  # remove all special characters from list which are not alphabets
     all_judges = [re.sub('[\']+', '', x) for x in all_judges]  # handle apostrophe separately
     all_judges = [x.strip() for x in all_judges]
@@ -308,8 +289,6 @@ def process(file):
                 cleanJudge_index.append([i, "per_curiam_in_opinion_name",author, all_judges,no_author_found])
 
             else: # last but two condition
-                # author = clean_author_list(author)
-                # check if author is per curiam only - exclude and cleanJudge_index.append("per curiam")
                 author = [author]
                 index = find_index(author, all_judges,'')
                 multijudge = many_judges_check(author,all_judges)
@@ -369,14 +348,14 @@ if __name__ == "__main__":
 
     working_dir = sys.argv[1]
     working_dir = os.path.join(working_dir, 'output_dir')
-    all_files = os.listdir(working_dir + '/stmCSV/')
+    all_files = os.listdir(working_dir + '/coaCSV/')
     all_files = [x for x in all_files if 'expanded' in x]
     print("Matching opinion writing judges")
 
     remaining_error_filename = working_dir + '/diagnostics/remaining_errors.csv'
     computed_index_filename = working_dir + '/processedFiles/computed_index'
     for f in tqdm(all_files):
-        filename = working_dir + '/stmCSV/' + f
+        filename = working_dir + '/coaCSV/' + f
         read_file = pd.read_csv(filename)
         many_judges_error,remaining_errors, computed_index = process(read_file)
         # write out correct files after checking everything with the additional data columns

@@ -5,7 +5,6 @@ import os
 import sys
 import math
 from collections import Counter
-# pd.options.mode.chained_assignment = None  # default='warn' -- check if it is ok to suppress
 
 # keep only rows where an opinion is present
 def check_per_curiam(a):
@@ -149,7 +148,6 @@ def all_three_mixed_noauthor(row):
     return(req_index)
 
 def determine_presiding_judge(row,ret_val):
-    # added here since the created variables are used
     # check with or without author
 
     author_pj = 0
@@ -269,18 +267,15 @@ def determine_presiding_judge(row,ret_val):
                             case_pj = row.judge_names.split(',')[req_index].strip()
                         else:
                             case_pj = float("NaN")
-                # return(float("NaN"))
             else:
                 req_index = possible_longest_tenure_original.index(max(possible_longest_tenure))
                 case_pj = row.judge_names.split(',')[req_index].strip()
 
-    # check if this judge is author
     if str(req_index) == str(row['index']):
         author_pj = 1
     elif row['index']=='None' or row['index']=='per_curiam_in_opinion_name' or row['index']=='not_found':
         author_pj = float("NaN")
-    # if str(author_index) == str(row['index']):
-    #     author_pj = 1
+
     if ret_val == "case_pj":
         return(case_pj)
     elif ret_val == "case_pj_type":
@@ -293,14 +288,10 @@ def determine_presiding_judge(row,ret_val):
 
 if __name__ == "__main__":
     working_dir = os.path.join(sys.argv[1], 'output_dir')
-    # working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
     check_header = True
     all_files = os.listdir(working_dir + '/final_add')
     for f in all_files:
         file = pd.read_csv(working_dir + '/final_add/'+f)
-        # check error_flags
-        # file["per_curiam_case"] = file.apply(lambda x: check_per_curiam(x.author), axis=1)
-        # file_keep = file[file['per_curiam_case']==False]
 
         file['n_men'] = file.apply(lambda x: calculate_male_judges(x.judge_gender_list), axis=1)
         file['n_white'] = file.apply(lambda x: calculate_white_judges(x.judge_races_list), axis=1)
@@ -309,10 +300,6 @@ if __name__ == "__main__":
         file['case_pj'] = file.apply(lambda x: determine_presiding_judge(x,"case_pj"), axis=1)
         file['author_pj'] = file.apply(lambda x: determine_presiding_judge(x, "author_pj"), axis=1)
 
-
-        # keep only those with '0','1','2' - these are rows where author is available
-        # file_keep = file_keep[(file_keep['index'] == '0') | (file_keep['index'] == '1') | (file_keep['index'] == '2')]
-        # print(set(file_keep['error_flags']))
 
         # keep required columns
         columns_keep = ['filename','caseTitle',
@@ -345,8 +332,6 @@ if __name__ == "__main__":
                         'j3_senior', 'j3_ideology'
                         ]
 
-        # include text for each opinion
-        # columns_keep.append('text_split')
 
         file_keep = file[columns_keep]
 
@@ -376,11 +361,8 @@ if __name__ == "__main__":
 
         # changing final names according to NV's suggestions
         file_keep.rename(columns={'caseTitle':'case_name',
-                                   # 'len_text':'opinion_len',
                                   'opinion_author_name':'author',
                                   'docket_number':'docket_num',
-                                  # 'court_name_abbv':'court_abbv',
-                                  # 'court_name':'court',
                                   'panel_ideology':'judge_ideology_list',
                                   'raw_score':'pagerank_rawscore',
                                   'percentile':'pagerank_percentile',
@@ -397,7 +379,6 @@ if __name__ == "__main__":
                                   'judge2_dist_judge': 'judge2_district',
                                   'judge2_visiting_judge': 'judge2_visiting',
                                   'decision_date':'case_date',
-                                  # 'all_judges':'judges_names_fulltext',
                                   'year_decision':'case_year',
                                   'circuitNum':'court',
                                   'csl_id':'caselaw_idb_merge_id'
@@ -407,9 +388,6 @@ if __name__ == "__main__":
         file_keep.loc[:,'author_elite'] = file_keep['author_elite'].map({True: 1, False: 0})
         file_keep.loc[:,'judge1_elite'] = file_keep['judge1_elite'].map({True: 1, False: 0})
         file_keep.loc[:,'judge2_elite'] = file_keep['judge2_elite'].map({True: 1, False: 0})
-        # file_keep['author_visiting'] = file_keep['author_visiting'].map({True: 1, False: 0})
-        # file_keep['judge1_visiting'] = file_keep['judge1_visiting'].map({True: 1, False: 0})
-        # file_keep['judge2_visiting'] = file_keep['judge2_visiting'].map({True: 1, False: 0})
         file_keep.loc[:,'us_party'] = file_keep['us_party'].map({True: 1, False: 0})
         file_keep.loc[:,'corp_party'] = file_keep['corp_party'].map({True: 1, False: 0})
 

@@ -58,7 +58,6 @@ def check_district_judge(row,opinion_index):
         court_vals.append(get_list(row[cname.format()], opinion_index).replace("U.S.", "United States"))
         cdate = 'commission_date' + str(i)
         commission_date_vals.append(get_list(row[cdate.format()], opinion_index).replace("U.S.", "United States"))
-    # check_positions_in_order(commission_date_vals)
     commission_date_vals_keep = []
     courts_keep = []
     index_keep = [idx for idx, s in enumerate(court_vals) if s != '']
@@ -73,11 +72,9 @@ def check_district_judge(row,opinion_index):
             continue
 
 
-    # now we just take the most recent one: this will be the last element in the list
 
     try:
-        check_court = courts_keep[-1] # sometimes, the date of decision is BEFORE the commission date so this creates an issue
-        # these are errors and thus "NA" is returned here.
+        check_court = courts_keep[-1]
         if "District Court" in check_court:
             return 1
         else:
@@ -94,7 +91,6 @@ def check_visiting_judge(row, opinion_index, court_name):
         court_vals.append(get_list(row[cname.format()], opinion_index).replace("U.S.", "United States"))
         cdate = 'commission_date' + str(i)
         commission_date_vals.append(get_list(row[cdate.format()], opinion_index).replace("U.S.", "United States"))
-    # check_positions_in_order(commission_date_vals)
     commission_date_vals_keep = []
     courts_keep = []
     index_keep = [idx for idx, s in enumerate(court_vals) if s!='']
@@ -135,7 +131,6 @@ def check_positions_in_order(commission_date_vals):
 
 
 def tenure(row, opinion_index):
-    # for all positions
     dec_date = datetime.strptime(row['decision_date'], '%Y-%m-%d')
     court_vals = []
     commission_date_vals = []
@@ -145,7 +140,6 @@ def tenure(row, opinion_index):
         cdate = 'commission_date' + str(i)
         commission_date_vals.append(get_list(row[cdate.format()], opinion_index).replace("U.S.", "United States"))
     check_positions_in_order(commission_date_vals)
-    #
     index_keep = [idx for idx, s in enumerate(court_vals) if 'Court of Appeals' in s]
     commission_date_vals_keep = []
     for i in index_keep:
@@ -164,7 +158,6 @@ def tenure(row, opinion_index):
     return(total_exp)
 
 def generate_topics_from_apptype_topiccode(apptype,topic_code):
-    # only 8 topics remain unclassified using this approach
     # classification adopted from Hinkle, 2021
     try:
         apptype = int(apptype)
@@ -198,9 +191,7 @@ def get_generic_vars(val, opinion_index):
     return(opinion_var)
 
 def publication_type(val):
-    # tot_str = "F.3d","F. 3d","F. App'x","F. App’x","Fed.Appx","F.App\'x","Fed. App\'x","Fed.App\'x"
     tot_str = ["F.3d", "F. 3d", "F. App'x", "F. App’x", "Fed.Appx", "F.App\'x", "Fed. App\'x", "Fed.App\'x"]
-    # but this is just both conditions so not using tot_str
     pub = ["F.3d","F. 3d"]
     unpub = ["F. App\'x","F. App’x","Fed.Appx","F.App\'x","Fed. App\'x","Fed.App\'x"]
     detect_pub = [1 for x in pub if x in val]
@@ -217,8 +208,6 @@ def get_opinion_length(val):
     return opinion_length
 
 def publication_type_reporter(val):
-    # tot_str = "F.3d","F. 3d","F. App'x","F. App’x","Fed.Appx","F.App\'x","Fed. App\'x","Fed.App\'x"
-    # but this is just both conditions so not using tot_str
     pub = ["Series"]
     unpub = ["Appendix"]
     detect_pub = [1 for x in pub if x in val]
@@ -251,7 +240,6 @@ def get_author_fullname(val, opinion_index):
     return(return_val)
 
 def is_chief_judge(row, opinion_index):
-    # we need to check for all chief judge vars: 1 to 6
     dec_date = datetime.strptime(row['decision_date'], '%Y-%m-%d')
     chief_judge_start = []
     chief_judge_end = []
@@ -302,9 +290,7 @@ def get_additional_vars(file):
     all_vars = []
     for i in range(0, len(file)):
         row = file.iloc[i]
-        # get_dist_judge, get_visiting_judge, get_tenure, get_elite = float("NaN"),float("NaN"),float("NaN"), float("NaN")
-        # get_gender, get_race, get_party, get_age, get_words, get_chief, get_senior = float("NaN"),float("NaN"),float("NaN"), float("NaN"),\
-        #                                                                              float("NaN"),float("NaN"),float("NaN")
+
         try:
             get_index = int(file.iloc[i]['index'])
         except:
@@ -319,13 +305,12 @@ def get_additional_vars(file):
         all_vars = all_vars + append_list
     df2 = pd.DataFrame(all_vars, columns=new_vars_df.columns)
     new_vars_df = pd.concat([new_vars_df, df2])
-    # new_vars_df = new_vars_df.append(pd.DataFrame(all_vars, columns=new_vars_df.columns))
+
     return(new_vars_df)
 
 
 def compute_vars(row,index):
-    # get_dist_judge, get_visiting_judge, get_tenure, get_elite = [float("NaN")]*4
-    # get_gender, get_race, get_party, get_age, get_words, get_chief, get_senior = [float("NaN")]*7
+
 
     var_req_index = which_corresponding_data(row, index)
     court_var = 'court_name' + str(var_req_index)
@@ -335,9 +320,9 @@ def compute_vars(row,index):
     get_tenure = tenure(row, index)
     get_elite = get_generic_vars(row['judge_elite'], index)
     get_gender = get_generic_vars(row['judge_gender_list'], index)  # here 1 = female
-    get_race = get_generic_vars(row['judge_races_list'], index)  # here 1 = ??
+    get_race = get_generic_vars(row['judge_races_list'], index)
     get_specific_race = get_generic_vars(row['judge_races_fulltext'],index)
-    get_party = get_generic_vars(row['judge_parties_list'], index)  # here 1 = ??
+    get_party = get_generic_vars(row['judge_parties_list'], index)
     get_age = get_judge_age(row['judge_birth_year'], index, row['decision_date'])
     get_words = len(row['text_split'].split(' '))
     get_chief = is_chief_judge(row, index)
@@ -357,10 +342,7 @@ def get_additional_vars_non_author(file):
     all_vars = []
     for i in range(0, len(file)):
         row = file.iloc[i]
-        # get_dist_judge1, get_visiting_judge1, get_tenure1, get_elite1 = [float("NaN")]*4
-        # get_gender1, get_race1, get_party1, get_age1, get_words1, get_chief1, get_senior1 = [float("NaN")]*7
-        # get_gender2, get_race2, get_party2, get_age2, get_words2, get_chief2, get_senior2 = [float("NaN")] * 7
-        # get_dist_judge2, get_visiting_judge2, get_tenure2, get_elite2 = [float("NaN")] * 4
+
         try:
             get_index = int(file.iloc[i]['index'])
         except:
@@ -385,7 +367,7 @@ def get_additional_vars_non_author(file):
         all_vars = all_vars + [list(itertools.chain.from_iterable(append_list_of_lists))]
     df2 = pd.DataFrame(all_vars, columns=new_vars_df.columns)
     new_vars_df = pd.concat([new_vars_df, df2])
-    # new_vars_df = new_vars_df.append(pd.DataFrame(all_vars, columns=new_vars_df.columns))
+
     return(new_vars_df)
 
 def isNaN(string):
@@ -407,7 +389,6 @@ def add_new_variables(file):
     for i in range(0, len(file)):
         row = file.iloc[i]
         if not(isNaN(row.author_fullname)):
-            # assuming we do not need data for the rows without an 'index' - check with prof
             append_list = [[float("NaN")] * 42]  # missing values
             all_vars = all_vars + append_list
             # append all Null values to lists
@@ -422,13 +403,11 @@ def add_new_variables(file):
         all_vars = all_vars + [list(itertools.chain.from_iterable(append_list_of_lists))]
     df2 = pd.DataFrame(all_vars, columns=new_vars_df.columns)
     new_vars_df = pd.concat([new_vars_df, df2])
-    # new_vars_df = new_vars_df.append(pd.DataFrame(all_vars, columns=new_vars_df.columns))
     return (new_vars_df)
 # now add these additional variables to each file and over-write files
 
 if __name__ == "__main__":
     working_dir = os.path.join(sys.argv[1], 'output_dir')
-    # working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
     all_files = os.listdir(working_dir + '/final/')
     keep_rows = pd.DataFrame()
     print("Creating additional variables")
@@ -442,7 +421,6 @@ if __name__ == "__main__":
         file.loc[file['index'] == '12', 'index'] = 'not_found'
         file.loc[file['index'] == '012', 'index'] = 'not_found'
 
-        # remove all unmerged data - already dropped??? - yes it is an inner merge
         file['year_decision'] = file['decision_date'].str[:4]
         file["topics_clean"] = file.apply(lambda x: generate_topics_from_apptype_topiccode(x.APPTYPE, x.NOS), axis=1)
         file["has_concurrence"] = file.apply(lambda x: get_case_type_concurrence(x.type), axis=1)
@@ -460,6 +438,5 @@ if __name__ == "__main__":
         file = file.join(new_vars)
 
 
-        file_name=file_name.replace("final","final_add") # remove this to replace same file - this is added only for trial
-        # print(file_name)
+        file_name=file_name.replace("final","final_add")
         file.to_csv(file_name,index=False)

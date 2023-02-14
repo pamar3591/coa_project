@@ -13,14 +13,8 @@ def clean_author_list(author):
         author = author.split(';')
     except:
         author = []
-        # print("Error:", author)
     author = [x for x in author if x != ""]
     author = [unidecode.unidecode(x) for x in author]  # getting rid of accents
-    # do not clean here
-    # author = [re.sub('[^A-Za-z0-9]+', ' ', x) for x in author]  # remove all special characters from list which are not alphabets
-    # author = [x.lower().replace("jr.", "").replace('.', "").replace("chief judge", "").replace("chief district judge","").replace(',', '').replace("circuit judge", "").replace(":", "").replace("senior", "").replace("district", "").replace("judge", "").replace("dissenting","").replace("concurring in the judgment","").replace("court","").replace("in part","").strip() for x in author]
-    # author = [x.replace("van ", "") if x == "van antwerpen" else x for x in author]
-    # author = [re.sub(" jr$","",x) for x in author] # GREENAWAY JR to GREENAWAY
     author = [x for x in author if x != ""]  # to avoid one error
     author = [x.strip() for x in author]
     return(author)
@@ -39,7 +33,6 @@ def separate_opinions_in_file(read_file):
             opinion_text = "" # for missing opinion text
         if len(opinion_text) > 1:
             count = count + 1
-    # print("Separate opinions found in", count, "cases")
     return(count)
 
 def separate_types_in_file(read_file):
@@ -51,7 +44,6 @@ def separate_types_in_file(read_file):
             type = ""
         if len(type) > 1:
             count = count + 1
-    # print("Separate types found in", count, "cases")
     return (count)
 
 def clean_text_split(text):
@@ -59,7 +51,6 @@ def clean_text_split(text):
         text = text.split(';opinion_text_begin')
         text = [x for x in text if x != ""]
         text = [unidecode.unidecode(x) for x in text]  # getting rid of accents
-        # text = [re.sub('[^A-Za-z0-9]+', ' ', x) for x in text]  # remove all special characters from list which are not alphabet # retaining the punctuation
         text = [x for x in text if x != ""]  # to avoid one error
         text = [x.strip() for x in text]
     except:
@@ -68,9 +59,7 @@ def clean_text_split(text):
 
 def clean_all_judges(text):
     try:
-        # text = text.split('')
         text = unidecode.unidecode(text)  # getting rid of accents
-        #text = re.sub('[^A-Za-z0-9 ,]+', '', text) # remove all special characters from list which are not alphabet
         text = text.strip()
     except:
         return(text)
@@ -94,7 +83,7 @@ def split_rows(read_file,file, working_dir):
     for i in range(0, len(read_file)):
         author = read_file['author'].iloc[i]
         author = clean_author_list(author)
-        if author == []:  # to handle type 'nan' for author from clean_author_list --> this is always the case for type and text as well, so we just write out 'nans'
+        if author == []:  # to handle type 'nan' for author from clean_author_list
             write_data = list(read_file.iloc[i].values) + ['nan_author', 'nan_type', 'nan_text', clean_judges]
             write_data_to_file(working_dir + '/diagnostics/' + 'empty_author_check.csv', write_data)
             continue
@@ -113,21 +102,16 @@ def split_rows(read_file,file, working_dir):
 if __name__ == "__main__":
 
     working_dir = sys.argv[1]
-    # working_dir = os.getcwd()
 
-    all_files = os.listdir(os.path.join(working_dir, 'output_dir/stmCSV/'))
+    all_files = os.listdir(os.path.join(working_dir, 'output_dir/coaCSV/'))
     all_files = [x for x in all_files if 'expanded' not in x]  # to avoid errors during rerun as same folder structure
     print("Splitting by author name - opinion on each row")
     for f in tqdm(all_files):
 
         # read file
-        filename = working_dir + '/output_dir/stmCSV/' + f
+        filename = working_dir + '/output_dir/coaCSV/' + f
         print(filename)
         read_file = pd.read_csv(filename)
-
-        # check condition: this should be True for all files --> This holds so commented out
-        # check_condition = not separate_opinions_in_file(read_file) and not separate_types_in_file(read_file)
-        # print("There are no separate opinions or types in file",check_condition)
 
         # write header row
         write_filename = filename.replace('.csv','_expanded.csv')

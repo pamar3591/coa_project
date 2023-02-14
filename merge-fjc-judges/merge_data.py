@@ -8,10 +8,10 @@ import csv
 import sys
 
 def load_idb_data(working_dir_data):
-    #working_dir_data = os.path.join(os.getcwd(), 'data/')
     try:
-        idb_df_pre = pd.read_csv(working_dir_data + "/ap08on.txt", delimiter="\t", low_memory=False)
+        idb_df_pre = pd.read_csv(working_dir_data + "/ap08on.txt", delimiter="\t", low_memory=False)   # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
         idb_df_07 = pd.read_csv(working_dir_data + "/ap71to07.txt", delimiter="\t", low_memory=False)
+                 # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
     except:
         print("IDB files not found")
         sys.exit(1)
@@ -104,13 +104,11 @@ def normalize_csl_docket(working_dir, csl,l):
     remaining_data = csl[csl['case_docketnum_nor'].str.contains("^[0-9]{7}$") == False]
     i = csl[csl['case_docketnum_nor'].str.contains("^[0-9]{7}$") == False]['case_docketnum_nor'].index
     # write detail for each row
-    #remaining_data = remaining_data[(remaining_data['type_split'] == 'majority') | (remaining_data['type_split'] == 'plurality')]
     for r in range(0, len(remaining_data)):
         row_data = [l, remaining_data.iloc[r].decision_date,  remaining_data.iloc[r].filename]
         with open(working_dir+'/diagnostics/docket_normalization_errors.csv', 'a') as file:
             writer = csv.writer(file)
             writer.writerow(row_data)
-    # print("Error in Matching string for this # of observations: ",len(i))
     csl.loc[i, 'case_docketnum_nor'] = '-1'
     return(csl)
 
@@ -123,13 +121,9 @@ def normalize_csl_decision_id(csl):
     return(csl)
 
 if __name__ == "__main__":
-    # working_dir = os.path.join(os.getcwd(), 'us_text_20200604/data/')
-    # working_dir_data = os.path.join(os.getcwd(), 'data/')
     working_dir = os.path.join(sys.argv[1], 'output_dir')
-    # working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
     working_dir_data = os.path.join(sys.argv[1], 'data-raw')
-    # working_dir_data = '/Volumes/SaloniWD/CoA-setup/data-raw'
-    all_files = os.listdir(working_dir + '/stmCSV/')
+    all_files = os.listdir(working_dir + '/coaCSV/')
     all_files = [x for x in all_files if 'expanded' in x]
 
     row_data = ['circuit_file_name', 'decision_date','filename']
@@ -145,7 +139,9 @@ if __name__ == "__main__":
     print("Loading citation data...")
     try:
         cited_from = pd.read_csv(working_dir_data + '/cited_from.csv.gz',compression='gzip')  # case_index is unique so can be directly merged
+        #  Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
         cited_to = pd.read_csv(working_dir_data + '/cited_to.csv.gz',compression='gzip')  # case_index is unique so can be directly merged
+                         # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
     except:
         print("Citation data not found")
         sys.exit(1)
@@ -153,6 +149,7 @@ if __name__ == "__main__":
     print("Loading pagerank data...")
     try:
         pagerank = pd.read_csv(working_dir_data + '/pagerank_scores_renamed.csv')  # case_index is unique so can be directly merged
+                         # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
     except:
         print("Pagerank data not found")
         sys.exit(1)
@@ -166,7 +163,7 @@ if __name__ == "__main__":
     idb['count'] = idb.groupby('IDB_ID')['IDB_ID'].transform('count')
 
     for f in tqdm(range(0,len(all_files))):
-        filename = working_dir + '/stmCSV/' + all_files[f]
+        filename = working_dir + '/coaCSV/' + all_files[f]
         read_file = pd.read_csv(filename)
         merge_file_name = working_dir + '/processedFiles/computed_index_' + all_files[f]
         index_file_read = pd.read_csv(merge_file_name)
@@ -175,9 +172,6 @@ if __name__ == "__main__":
         merged_data = pd.concat([read_file, index_file_read], axis=1)
 
         # merge citations
-        # cited_from['case_index'] = cited_from['case_index'].astype(int)
-        # cited_to['case_index'] = cited_to['case_index'].astype(int)
-        # merged_data['filename'] = merged_data['filename'].astype(int)
         merged_data = merged_data.merge(cited_from, left_on='filename',right_on='case_index', how='left')
         merged_data = merged_data.merge(cited_to, left_on='filename',right_on='case_index', how='left')
 
@@ -191,22 +185,18 @@ if __name__ == "__main__":
 
         # merge IDB data
         # this step merges 98% of cases in case law with the IDB data
-        # this has been checked for consistency across circuits (97-99% matches)
-        # as well as across years (96-99% matches)
-        # finally, unmerged data was manually checked to see if there were any systematic issues in the matches
-        # however, these were typically due to typing errors and hence ok to be ignored.
         # by default this is an inner merge
         merged = merged_data.merge(idb, left_on='csl_id', right_on='IDB_ID',how="inner")
 
         # write out unmerged file for diagnostics
         get_unmerged = pd.merge(merged_data, merged, how='outer', left_on='csl_id', right_on='IDB_ID', indicator=True)
         get_unmerged = get_unmerged[get_unmerged['_merge'] == 'left_only']
-        write_unmerged_file_name = working_dir + '/diagnostics/unmerged_csl/' + all_files[f].replace('ForSTM_expanded', '')
+        write_unmerged_file_name = working_dir + '/diagnostics/unmerged_csl/' + all_files[f].replace('ForCOA_expanded', '')
         get_unmerged.to_csv(write_unmerged_file_name, index=False)
 
 
 
         # write merged file
-        write_file_name = working_dir + '/final/' + all_files[f].replace('ForSTM_expanded','')
+        write_file_name = working_dir + '/final/' + all_files[f].replace('ForCOA_expanded','')
         print("Generated: ", write_file_name)
         merged.to_csv(write_file_name, index=False)

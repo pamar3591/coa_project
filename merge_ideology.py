@@ -4,10 +4,9 @@ import re
 import sys
 
 
-
 def get_judge_ideology():
     try:
-        ideology_loc = os.path.join(sys.argv[1], "data-raw/judge_ideology_JCS.sav")
+        ideology_loc = os.path.join(sys.argv[1], "data-raw/judge_ideology_JCS.sav") # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
         ideology = pd.read_spss(ideology_loc)
     except:
         print("Ideology data not found")
@@ -63,9 +62,7 @@ def merge_judge_ideology(judge_combined):
         subIde = ideology[ideology.circuit == court].copy()
 
         sub_judge = judge_combined[judge_combined.court_name == court]
-        # just direct merge? no, some merge with "surname, name", others merge with "surname, name, middleinitial." pattern so match for both
-        # key: "John Preston Bailey" --> Bailey, John
-        ## add court_name just to be sure
+        
         match_judges = sub_judge.merge(subIde, left_on="full_name_match_ide", right_on="name", how="left")
         merged = match_judges[match_judges['name'].notnull()]
         unmerged = match_judges[match_judges['name'].isnull()].drop(['name', 'JCS2018', 'circuit'], axis=1)
@@ -83,18 +80,19 @@ def merge_judge_ideology(judge_combined):
                                        how="left").drop(["name_modified"], axis=1)
 
         required_df = pd.concat([merged, merge_using_middle_keep, final_merge])
-        # matchedIdeology = matchedIdeology.append(required_df, ignore_index=True)
         matchedIdeology = pd.concat([matchedIdeology,required_df])
         # to check if there are any errors (there are none)
         if (len(required_df) != len(sub_judge)):
             print("Issue in merging for court:", court)
     return (matchedIdeology)
 
+#
+
 if __name__ == "__main__":
     print("Merging judge ideology with fjc data")
     working_dir = sys.argv[1]
     try:
-        judge_combined = pd.read_csv(working_dir + '/data-raw/federal_judges_organized_by_judge.csv')  # here we are importing the data
+        judge_combined = pd.read_csv(working_dir + '/data-raw/federal_judges_organized_by_judge.csv')  # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
     except:
         print("Federal judges data missing")
         sys.exit(1)
@@ -118,7 +116,7 @@ if __name__ == "__main__":
     merged_ideology_df = merge_judge_ideology(judge_combined)
 
     # now we write out the file: all merged (with ideology) + all unmerged (without ideology - here it will be NA)
-    # keep columns:
+    # keep columns
     merged_data = merged_ideology_df[['jid', 'name', 'JCS2018', 'circuit']]
 
     judge_combined = judge_combined.merge(merged_data, on="jid", how="left")

@@ -2,7 +2,6 @@ import pandas as pd
 import os
 
 working_dir = os.path.join(sys.argv[1], 'output_dir')
-# working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
 
 
 # in the _expanded files, what is the number of CASES with a majority/plurality opinion author
@@ -13,15 +12,15 @@ def create_case_distribution(file_list, working_dir, output_fname):
     check_header = True
     for f in file_list:
         try:
-            data = pd.read_csv(working_dir + '/stmCSV/' + f)
+            data = pd.read_csv(working_dir + '/coaCSV/' + f)
         except:
             data = pd.read_csv(working_dir + '/final/' + f)
         # only get the CASES with a majority / plurality opinion author
         # data = data[data['type_split'].notna()]
         data = data[(data['type_split'] == 'majority') | (data['type_split'] == 'plurality')]
-        if f == 'ca5DataForSTM_expanded.csv':
+        if f == 'ca5DataForCOA_expanded.csv':
             data = data[~((data['filename'] == 5752031) & (data['type_split'] == 'plurality'))]  # HARD CODED
-        if f == 'ca6DataForSTM_expanded.csv':
+        if f == 'ca6DataForCOA_expanded.csv':
             data = data[~((data['filename'] == 3600356) & (data['type_split'] == 'plurality'))]  # HARD CODED
 
         data['count'] = 1
@@ -38,7 +37,7 @@ def create_case_distribution(file_list, working_dir, output_fname):
 
 
 
-all_files = os.listdir(working_dir + '/stmCSV/')
+all_files = os.listdir(working_dir + '/coaCSV/')
 all_files = [a for a in all_files if 'expanded' in a]
 #we create a list with the total number of cases, by circuit-year
 create_case_distribution(all_files, working_dir, 'output_dir/diagnostics/total_cases.csv'

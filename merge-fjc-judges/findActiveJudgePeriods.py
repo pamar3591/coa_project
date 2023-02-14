@@ -10,9 +10,8 @@ def findSchool(x):
 						 "pennsylvania", "university of virginia",
 						 "berkeley", 'duke', "university of michigan", "cornell", "georgetown"]
 	for i in range(len(elite_schools_rev)):
-		if isinstance(x,str): ## sb: The isinstance() function returns True if the specified object is of the specified type, otherwise False.
-			## https://www.w3schools.com/python/ref_func_isinstance.asp
-			if len(re.findall(elite_schools_rev[i],x.lower())) > 0: ## re.findall(elite_schools[i],x) returns a list with all matches of x in elite_schools
+		if isinstance(x,str): #  The isinstance() function returns True if the specified object is of the specified type, otherwise False.
+			if len(re.findall(elite_schools_rev[i],x.lower())) > 0: ##
 				return(True)
 	return(False)
 
@@ -25,8 +24,7 @@ def findDegree(x):
 				return(True)
 	return(False)
 
-## apply(lambda...) makes code tidier and speeds up tasks as well
-## https://www.analyticsvidhya.com/blog/2020/03/what-are-lambda-functions-in-python/
+# apply(lambda...) makes code tidier and speeds up tasks as well
 
 def find_school_degree(var, judge_combined):
 	elite_var = "elite" + str(var)
@@ -59,13 +57,10 @@ def findActivePeriods(dataFileName,minYear=1950,byYear=False,maxYear=2019):
 					judgeRow['Court Type'+ apptStrMod] == 'Other' or judgeRow['Court Type' + apptStrMod] == 'Supreme Court'):
 				
 				if str(judgeRow['Commission Date'+ apptStrMod]) =='':
-					#print(judgeRow['Last Name'])
-					#print(judgeRow)
-					#print('has no Commission date')
 					continue
 				circuit = judgeRow['Court Name'+ apptStrMod]
 				
-				#print(judgeRow['Termination Date'+ apptStrMod])
+
 				start = judgeRow['Commission Date'+ apptStrMod].split('-')[0]
 				if str(judgeRow['Termination Date'+ apptStrMod]) == '':
 					end = '9999'
@@ -102,7 +97,6 @@ def findActivePeriods(dataFileName,minYear=1950,byYear=False,maxYear=2019):
 				gender = judgeRow['Gender']
 				race = judgeRow['Race or Ethnicity']
 				birth = str(int(judgeRow['Birth Year'])%2)
-				#birth = str(len(judgeRow['Birth City'])%2)
 				
 				firstName = judgeRow['First Name'].strip()
 				lastName = judgeRow['Last Name'].strip().split(' ')[-1].strip()
@@ -179,7 +173,7 @@ def findActivePeriods(dataFileName,minYear=1950,byYear=False,maxYear=2019):
 
 				middleName = judgeRow['Middle Name'].strip()
 				suffix = str(judgeRow['Suffix']).strip()
-				#print(middleName)
+				
 
 				fullName = lastName + '<' +' ' +firstName
 				if middleName!='':
@@ -208,17 +202,9 @@ def findActivePeriods(dataFileName,minYear=1950,byYear=False,maxYear=2019):
 					if circuit not in judgeInstances:
 						judgeInstances[circuit] = []
 					judgeInstances[circuit].append(judgeInst)
-	#print(judgeInstances.keys())
-	#print(len(judgeInstances))
 
-	#for j in judgeInstances['U.S. Court of Appeals for the First Circuit']:
-	#	if j.start>=1980:
-	#		print(j.lastName)
 				
 				
-	#Termination Date (1) == 9/14/1959
-	#Commission Date (2)
-	#Court Type (2)  == U.S. Court of Appeals
 
 	return judgeInstances
 if __name__ == "__main__":	

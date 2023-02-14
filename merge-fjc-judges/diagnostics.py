@@ -15,7 +15,6 @@ def check_for_majority_or_plurality(type):
 def count_judges(judge_names):
     return(len(judge_names.split(',')))
 
-# working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
 working_dir = os.path.join(sys.argv[1], 'output_dir')
 
 ### compute number of cases at every stage
@@ -43,7 +42,7 @@ def create_distribution(file_list, addr, output_fname):
 
 
 # output of dataPrep: First stage
-file_addr = working_dir + '/stmCSV/'
+file_addr = working_dir + '/coaCSV/'
 all_files_dataprep = os.listdir(file_addr)
 all_files_dataprep = [x for x in all_files_dataprep if 'expanded' not in x]  # to avoid errors during rerun as same folder structure
 diagnostics_output = working_dir + '/diagnostics/' + 'dataprep_diag.csv'
@@ -51,7 +50,7 @@ all_files_dataprep.sort()
 create_distribution(all_files_dataprep, file_addr, diagnostics_output)
 
 # next step: output of split_csv
-file_addr = working_dir + '/stmCSV/'
+file_addr = working_dir + '/coaCSV/'
 all_files_dataprep = os.listdir(file_addr)
 all_files_dataprep = [x for x in all_files_dataprep if 'expanded' in x]  # to avoid errors during rerun as same folder structure
 diagnostics_output = working_dir + '/diagnostics/' + 'expanded_diag.csv'
@@ -116,7 +115,6 @@ def no_presiding_judge(row,author_absent):
     if sum(visiting_list) == 3:
         return(float("NaN"))
 
-# working_dir = '/Volumes/SaloniWD/CoA-setup/output_dir'
 all_files = os.listdir(working_dir + '/final_add/')
 check_header = True
 for f in all_files:
@@ -214,15 +212,15 @@ def create_case_distribution(file_list, working_dir, output_fname):
     check_header = True
     for f in file_list:
         try:
-            data = pd.read_csv(working_dir + '/stmCSV/' + f)
+            data = pd.read_csv(working_dir + '/coaCSV/' + f)
         except:
             data = pd.read_csv(working_dir + '/final/' + f)
         # only get the CASES with a majority / plurality opinion author
         # data = data[data['type_split'].notna()]
         data = data[(data['type_split'] == 'majority') | (data['type_split'] == 'plurality')]
-        if f == 'ca5DataForSTM_expanded.csv':
+        if f == 'ca5DataForCOA_expanded.csv':
             data = data[~((data['filename'] == 5752031) & (data['type_split'] == 'plurality'))]  # HARD CODED
-        if f == 'ca6DataForSTM_expanded.csv':
+        if f == 'ca6DataForCOA_expanded.csv':
             data = data[~((data['filename'] == 3600356) & (data['type_split'] == 'plurality'))]  # HARD CODED
 
         data['count'] = 1
@@ -239,7 +237,7 @@ def create_case_distribution(file_list, working_dir, output_fname):
 
 
 
-all_files = os.listdir(working_dir + '/stmCSV/')
+all_files = os.listdir(working_dir + '/coaCSV/')
 all_files = [a for a in all_files if 'expanded' in a]
 #we create a list with the total number of cases, by circuit-year
 create_case_distribution(all_files, working_dir, 'output_dir/diagnostics/total_cases.csv'

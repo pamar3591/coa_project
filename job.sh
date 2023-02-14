@@ -1,7 +1,9 @@
 #!/bin/sh
 
+        # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+
  #remove all ._ files (if any) created by MAC
- #dot_clean -m $1
+# dot_clean -m $1
 
 # # create the directory structure; $1 indicates project folder location from commandline
 #python3 make_dirs.py $1
@@ -26,7 +28,7 @@
 #python3 merge-fjc-judges/merge_data.py $1
 
 # creating main variables from the data
-#python3 merge-fjc-judges/add_variables.py $1
+python3 merge-fjc-judges/add_variables.py $1
 
 # filter required variables from the data
 python3 merge-fjc-judges/filter.py $1

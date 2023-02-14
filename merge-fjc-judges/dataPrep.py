@@ -19,10 +19,8 @@ def createJudgePermutations(judgeInstances):
 	judgePartyPermutations = {}
 	judgeGenderPermutations = {}
 	judgeRacePermutations = {}
-	#generate the random permutations of judges to attributes
 
 	for circuitName in judgeInstances:
-		#print(circuitName)
 		judgePartyPermutations[circuitName] = []
 		judgeGenderPermutations[circuitName] = []
 		judgeRacePermutations[circuitName] = []
@@ -106,7 +104,7 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 
 	circuitNameShort= circuitLongToShort[circuitName]
 
-	stmOutFileName = os.path.join(outPutDir,circuitNameShort + 'DataForSTM.csv')
+	stmOutFileName = os.path.join(outPutDir,circuitNameShort + 'DataForCOA.csv')
 
 	resultsSummaryFile.write(circuitName + ':\n')
 
@@ -148,7 +146,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 		for fname in os.listdir(dataFolder):
 
 			year = int(fname[:4])
-			#print('processing year ' + str(year))
 			if year not in procYears:
 				continue
 
@@ -173,7 +170,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 						continue
 
 					matchedCircuit +=1
-					#if caseInst.circuitNum in judgeInstances:
 					caseInst.assignJudges(judgeInstances[caseInst.circuitNum],secondaryJudgeLists=judgeInstances)
 
 					caseInst.removeTextHeaders()
@@ -196,7 +192,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 					if len(caseInst.cleanText)>minCaseCharactersForSTM:
 						includeInSTM = 1
 
-					# this has been changed for CoA project
 					headerRow = ['', 'filename', 'caseTitle', 'judge_parties_list', 'judge_gender_list',
 								 'judge_races_list', 'judge_races_fulltext', 'judges_births_list', 'year_filed',
 								 'circuitNum', 'judge_names', 'us_party', 'corp_party', 'len_text', 'includeInSTM',
@@ -236,7 +231,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 					for permNum in range(numPermsToGeneratePerAttribute):
 						permJudgeList = []
 						for nextJudge in caseInst.caseJudges:
-							#permJudgeList.append(judgePartyPermutations[permNum][judgeInstances[circuitName].index(nextJudge)])
 							permJudgeList.append(judgePartyPermutations[nextJudge.circuit][permNum][judgeInstances[nextJudge.circuit].index(nextJudge)])
 						outRow.append(caseInst.getJudgePartiesList(judgeParties=permJudgeList))
 
@@ -244,7 +238,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 					for permNum in range(numPermsToGeneratePerAttribute):
 						permJudgeList = []
 						for nextJudge in caseInst.caseJudges:
-							#permJudgeList.append(judgeGenderPermutations[permNum][judgeInstances[circuitName].index(nextJudge)])
 							permJudgeList.append(judgeGenderPermutations[nextJudge.circuit][permNum][judgeInstances[nextJudge.circuit].index(nextJudge)])
 
 						outRow.append(caseInst.getJudgeGendersList(judgeGenders=permJudgeList))
@@ -253,9 +246,8 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 					for permNum in range(numPermsToGeneratePerAttribute):
 						permJudgeList = []
 						for nextJudge in caseInst.caseJudges:
-							#permJudgeList.append(judgeRacePermutations[permNum][judgeInstances[circuitName].index(nextJudge)])
 							permJudgeList.append(judgeRacePermutations[nextJudge.circuit][permNum][judgeInstances[nextJudge.circuit].index(nextJudge)])
-						#outRow.append(permJudgeList)
+						
 						outRow.append(caseInst.getJudgeRacesList(judgeRaces=permJudgeList))
 
 
@@ -263,9 +255,6 @@ def createCircuitCSV(circuitName,outPutDir,judgeInstances,dataFolder,resultsSumm
 					textLengthCSV.writerow([len(str(caseInst.cleanText))])
 					rownum += 1
 
-					#if rownum >4 and includeInSTM==0:
-
-					#	quit()
 
 		resultsSummaryFile.write('Total Cases: ' + str(totalCaseCount) +'\n')
 		resultsSummaryFile.write('matchedCircuit: ' + str(matchedCircuit)+'\n')
@@ -279,8 +268,7 @@ if __name__ == "__main__":
 	#seed the random generator so future runs are consistent with reported results
 	random.seed(12345)
 	working_dir = sys.argv[1]
-	# change this!
-	outPutDir = os.path.join(working_dir, 'output_dir', 'stmCSV')
+	outPutDir = os.path.join(working_dir, 'output_dir', 'coaCSV')
 
 	dataFolder = os.path.join(working_dir, 'output_dir', 'Data', 'yearData')
 

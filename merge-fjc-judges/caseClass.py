@@ -14,16 +14,14 @@ class case(object):
    
 
     def __init__(self,caseJSON):
-        #change this variable to alter what happens every time this class is used.
-        #can choose whether the text for a case is only the first(main) opinion or if it should
-        #include additional pieces(dissents, concurrences)
+        
         onlyMajorityText = True
 
         self.opinionFileName = caseJSON['id']
         self.court_name = caseJSON['court']['name']
         self.circuitNum = caseJSON['court']['name'].replace('United ','U.').replace('States','S.')
 
-        #sometimes the name of the D.C circuit in the data is different even when they are referring to the same court.
+    
         #We'll standardize here
         if (self.circuitNum == 'U.S. Circuit Court of the District of Columbia' or
             self.circuitNum =='U.S. Court of Appeals for the District of Columbia' or
@@ -52,9 +50,6 @@ class case(object):
         self.type = type
         self.text = text
         
-#        for textPiece in caseJSON['casebody']['data']['opinions']:
-#            if (not onlyMajorityText) or textPiece['type'] == 'majority':
-#                self.cleanText = self.cleanText +  textPiece['text'].replace('”','"').replace('’',"'").replace('“','"').replace("‘","'") + ' '
 
         self.cleanText = self.cleanText.replace('\n',' ').replace('\t',' ')
         self.yearFiled = int(caseJSON['decision_date'].split('-')[0])
@@ -157,7 +152,6 @@ class case(object):
 
     #goes through clean text and removes all occurrences of the names of U.S. states, judges, 'united','states','america', and corporation words from the case.
     #Removes only if they appear as a whole word or followed by an "'s" (which covers possessive usage)
-    #requires assignCleanText to have been run
     def removeTargetWordsFromText(self):
         judgeLastNames = [j.lastName.lower() for j in self.caseJudges]
         judgeFirstNames = [j.firstName.lower() for j in self.caseJudges]
