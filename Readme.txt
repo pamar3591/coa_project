@@ -1,27 +1,16 @@
 Start Terminal
 
- 
-
 Change the folder to project directory
-
- 
 
 Run: ./packages.sh
 
- 
-
 Then run the bash script on your system
-
 Type: ./job.sh path_of_project_directory
-
 Replace path_of_project_directory with path of the project directory on your system.
 
- 
 
 If ~/CoA_Project/ is your project directory, then directory structure should be the following:
-
 - job.sh
-
 - merge-fjc-judges <folder with scripts>
 - make_dirs.py
 - merge_ideology.py
