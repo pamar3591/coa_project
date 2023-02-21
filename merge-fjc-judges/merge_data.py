@@ -9,9 +9,9 @@ import sys
 
 def load_idb_data(working_dir_data):
     try:
-        idb_df_pre = pd.read_csv(working_dir_data + "/ap08on.txt", delimiter="\t", low_memory=False)   # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+        idb_df_pre = pd.read_csv(working_dir_data + "/ap08on.txt", delimiter="\t", low_memory=False)   # Here we are importing the data. The original data is available on file with Nina Varsava.
         idb_df_07 = pd.read_csv(working_dir_data + "/ap71to07.txt", delimiter="\t", low_memory=False)
-                 # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+                 # Here we are importing the data. The original data is available on file with Nina Varsava.
     except:
         print("IDB files not found")
         sys.exit(1)
@@ -139,9 +139,9 @@ if __name__ == "__main__":
     print("Loading citation data...")
     try:
         cited_from = pd.read_csv(working_dir_data + '/cited_from.csv.gz',compression='gzip')  # case_index is unique so can be directly merged
-        #  Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+        #  Here we are importing the data. The original data is available on file with Nina Varsava.
         cited_to = pd.read_csv(working_dir_data + '/cited_to.csv.gz',compression='gzip')  # case_index is unique so can be directly merged
-                         # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+                         # Here we are importing the data. The original data is available on file with Nina Varsava.
     except:
         print("Citation data not found")
         sys.exit(1)
@@ -149,7 +149,8 @@ if __name__ == "__main__":
     print("Loading pagerank data...")
     try:
         pagerank = pd.read_csv(working_dir_data + '/pagerank_scores_renamed.csv')  # case_index is unique so can be directly merged
-                         # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+                         # Here we are importing the data. The original data is available on file with Nina Varsava.
+                         
     except:
         print("Pagerank data not found")
         sys.exit(1)

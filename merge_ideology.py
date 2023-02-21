@@ -6,7 +6,7 @@ import sys
 
 def get_judge_ideology():
     try:
-        ideology_loc = os.path.join(sys.argv[1], "data-raw/judge_ideology_JCS.sav") # Here we are importing the data. The original data is available on file with Nina Varsava. Please contact for any question or issues
+        ideology_loc = os.path.join(sys.argv[1], "data-raw/judge_ideology_JCS.sav") # Here we are importing the data. The original data is available on file with Nina Varsava. 
         ideology = pd.read_spss(ideology_loc)
     except:
         print("Ideology data not found")

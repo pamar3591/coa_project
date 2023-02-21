@@ -1,4 +1,4 @@
-# splits the data in /us_text_20200604/data/data.jsonl into year-wise JSON files. The original data is available on file with Nina Varsava. Please contact for any question or issues
+# splits the data in /us_text_20200604/data/data.jsonl into year-wise JSON files. The original data is available on file with Nina Varsava. 
 # separate json file for each year in directory /us_text_20200604/data/Data/yearData
 import os
 import json
